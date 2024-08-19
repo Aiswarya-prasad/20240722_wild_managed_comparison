@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+"""
+name: Wild-Managed-Bees-Comparison
+description: Snakefile to be used to launch the pipeline and run qc, assembly, binning and some downstream steps
+author: Aiswarya Prasad (aiswarya.prasad@unil.ch)
+dependencies:
+    - raw data
+    - config files
+"""
+
+import os
+import glob
+import yaml
+import itertools
+import subprocess
+from itertools import chain
+
+
+configfile: "config/config.yml"
+
+SAMPLES = config["SAMPLES_RAW"]
+
+
+include: "common.smk"
+
+# SAMPLES = [os.path.basename(x) for x in glob.glob('results/00_RawData/from_Novogene/*') if os.path.basename(x).startswith('DNA')]
+raw_paths_dict = {x: glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz') for x in SAMPLES}
+raw_qc_paths = [os.path.join(f'results/00_RawData/fastqc/{y.split("/")[3]}', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.html') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
+trimmed_paths_dict = {x: [os.path.join(f'results/01_TrimmingFiltering', remove_run_name_fluff(os.path.basename(y))) for y in glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz')] for x in SAMPLES}
+# trimmed_qc_paths = [os.path.join(f'results/01_TrimmingFiltering/fastqc/{os.path.basename(y).split("_L")[0]}/', os.path.basename(y)).replace('.fq.gz', '_fastqc.html') for y in list(chain(*trimmed_paths_dict.values()))]
+
+rule targets:
+    input:
+        raw_files = list(chain(*raw_paths_dict.values())),
+        raw_qc_files = raw_qc_paths,
+        # trimmed_files = trimmed_paths_dict.values(),
+        # trimmed_files_qc = trimmed_qc_paths,
+
+include: "trim-qc.smk"

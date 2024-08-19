@@ -1,0 +1,16 @@
+name: instrain-env
+
+channels:
+  - conda-forge
+  - bioconda
+  - hcc
+
+dependencies:
+  - bcftools
+  - samtools
+  - prodigal
+  - numpy
+  - pysam
+  - biopython=1.74
+  - instrain
+  - bowtie # for now added to with mambe install to /work/FAC/FBM/DMF/pengel/spirit/aprasad/snakemake-conda-envs/8d7f28bda79869f4321c2fbc637261f0_

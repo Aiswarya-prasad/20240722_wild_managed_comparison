@@ -1,161 +1,161 @@
 SAMPLES_RAW:
- DNA1_1
- DNA1_2
- DNA5_5
- DNA10_1
- DNA10_2
- DNA13_4
- DNA13_5
- DNA19_1
- DNA24_3
- DNA24_4
- DNA24_5
- DNA27_2
- DNA27_3
- DNA27_4
- DNA30_1
- DNA30_2
- DNA30_3
- DNA32_5
- DNA35_1
- DNA37_4
- DNA37_5
- DNA37_1
- DNA40_3
- DNA40_4
- DNA1_4
- DNA1_5
- DNA5_1
- DNA10_3
- DNA10_4
- DNA10_5
- DNA19_2
- DNA19_3
- DNA19_4
- DNA22_1
- DNA22_2
- DNA25_1
- DNA25_2
- DNA27_5
- DNA28_1
- DNA30_4
- DNA30_5
- DNA35_2
- DNA35_3
- DNA35_4
- DNA39_1
- DNA39_2
- DNA39_3
- DNA40_5
- DNA1_3
- DNA22_3
- DNA25_3
- DNA28_2
- DNA35_5
- DNA39_4
- DNA41_1
- DNA47_1
- DNA56_1
- DNA61_1
- DNA62_1
- DNA65_1
- DNA66_1
- DNA67_1
- DNA68_1
- DNA69_1
- DNA5_3
- DNA13_2
- DNA22_4
- DNA25_4
- DNA28_3
- DNA32_2
- DNA37_2
- DNA39_5
- DNA41_2
- DNA42_1
- DNA47_2
- DNA52_1
- DNA56_2
- DNA57_2
- DNA59_2
- DNA61_2
- DNA62_2
- DNA63_2
- DNA64_2
- DNA65_2
- DNA66_2
- DNA67_2
- DNA68_2
- DNA69_2
- DNA5_4
- DNA13_3
- DNA22_5
- DNA25_5
- DNA28_4
- DNA32_3
- DNA37_3
- DNA40_1
- DNA41_3
- DNA42_2
- DNA47_3
- DNA52_2
- DNA56_3
- DNA57_3
- DNA59_3
- DNA61_3
- DNA62_3
- DNA63_3
- DNA64_3
- DNA65_3
- DNA66_3
- DNA67_3
- DNA68_3
- DNA69_3
- DNA13_1
- DNA19_5
- DNA24_1
- DNA27_1
- DNA32_1
- DNA41_4
- DNA42_3
- DNA42_5
- DNA47_4
- DNA52_3
- DNA52_5
- DNA56_4
- DNA57_1
- DNA57_4
- DNA59_4
- DNA61_4
- DNA62_4
- DNA63_4
- DNA64_4
- DNA65_4
- DNA66_4
- DNA67_4
- DNA68_4
- DNA69_4
- DNA5_2
- DNA24_2
- DNA28_5
- DNA32_4
- DNA40_2
- DNA41_5
- DNA42_4
- DNA47_5
- DNA52_4
- DNA56_5
- DNA57_5
- DNA59_1
- DNA59_5
- DNA61_5
- DNA62_5
- DNA63_1
- DNA63_5
- DNA64_1
- DNA64_5
- DNA65_5
- DNA66_5
- DNA67_5
- DNA68_5
- DNA69_5
+ - "DNA1_1"
+ - "DNA1_2"
+ - "DNA5_5"
+ - "DNA10_1"
+ - "DNA10_2"
+ - "DNA13_4"
+ - "DNA13_5"
+ - "DNA19_1"
+ - "DNA24_3"
+ - "DNA24_4"
+ - "DNA24_5"
+ - "DNA27_2"
+ - "DNA27_3"
+ - "DNA27_4"
+ - "DNA30_1"
+ - "DNA30_2"
+ - "DNA30_3"
+ - "DNA32_5"
+ - "DNA35_1"
+ - "DNA37_4"
+ - "DNA37_5"
+ - "DNA37_1"
+ - "DNA40_3"
+ - "DNA40_4"
+ - "DNA1_4"
+ - "DNA1_5"
+ - "DNA5_1"
+ - "DNA10_3"
+ - "DNA10_4"
+ - "DNA10_5"
+ - "DNA19_2"
+ - "DNA19_3"
+ - "DNA19_4"
+ - "DNA22_1"
+ - "DNA22_2"
+ - "DNA25_1"
+ - "DNA25_2"
+ - "DNA27_5"
+ - "DNA28_1"
+ - "DNA30_4"
+ - "DNA30_5"
+ - "DNA35_2"
+ - "DNA35_3"
+ - "DNA35_4"
+ - "DNA39_1"
+ - "DNA39_2"
+ - "DNA39_3"
+ - "DNA40_5"
+ - "DNA1_3"
+ - "DNA22_3"
+ - "DNA25_3"
+ - "DNA28_2"
+ - "DNA35_5"
+ - "DNA39_4"
+ - "DNA41_1"
+ - "DNA47_1"
+ - "DNA56_1"
+ - "DNA61_1"
+ - "DNA62_1"
+ - "DNA65_1"
+ - "DNA66_1"
+ - "DNA67_1"
+ - "DNA68_1"
+ - "DNA69_1"
+ - "DNA5_3"
+ - "DNA13_2"
+ - "DNA22_4"
+ - "DNA25_4"
+ - "DNA28_3"
+ - "DNA32_2"
+ - "DNA37_2"
+ - "DNA39_5"
+ - "DNA41_2"
+ - "DNA42_1"
+ - "DNA47_2"
+ - "DNA52_1"
+ - "DNA56_2"
+ - "DNA57_2"
+ - "DNA59_2"
+ - "DNA61_2"
+ - "DNA62_2"
+ - "DNA63_2"
+ - "DNA64_2"
+ - "DNA65_2"
+ - "DNA66_2"
+ - "DNA67_2"
+ - "DNA68_2"
+ - "DNA69_2"
+ - "DNA5_4"
+ - "DNA13_3"
+ - "DNA22_5"
+ - "DNA25_5"
+ - "DNA28_4"
+ - "DNA32_3"
+ - "DNA37_3"
+ - "DNA40_1"
+ - "DNA41_3"
+ - "DNA42_2"
+ - "DNA47_3"
+ - "DNA52_2"
+ - "DNA56_3"
+ - "DNA57_3"
+ - "DNA59_3"
+ - "DNA61_3"
+ - "DNA62_3"
+ - "DNA63_3"
+ - "DNA64_3"
+ - "DNA65_3"
+ - "DNA66_3"
+ - "DNA67_3"
+ - "DNA68_3"
+ - "DNA69_3"
+ - "DNA13_1"
+ - "DNA19_5"
+ - "DNA24_1"
+ - "DNA27_1"
+ - "DNA32_1"
+ - "DNA41_4"
+ - "DNA42_3"
+ - "DNA42_5"
+ - "DNA47_4"
+ - "DNA52_3"
+ - "DNA52_5"
+ - "DNA56_4"
+ - "DNA57_1"
+ - "DNA57_4"
+ - "DNA59_4"
+ - "DNA61_4"
+ - "DNA62_4"
+ - "DNA63_4"
+ - "DNA64_4"
+ - "DNA65_4"
+ - "DNA66_4"
+ - "DNA67_4"
+ - "DNA68_4"
+ - "DNA69_4"
+ - "DNA5_2"
+ - "DNA24_2"
+ - "DNA28_5"
+ - "DNA32_4"
+ - "DNA40_2"
+ - "DNA41_5"
+ - "DNA42_4"
+ - "DNA47_5"
+ - "DNA52_4"
+ - "DNA56_5"
+ - "DNA57_5"
+ - "DNA59_1"
+ - "DNA59_5"
+ - "DNA61_5"
+ - "DNA62_5"
+ - "DNA63_1"
+ - "DNA63_5"
+ - "DNA64_1"
+ - "DNA64_5"
+ - "DNA65_5"
+ - "DNA66_5"
+ - "DNA67_5"
+ - "DNA68_5"
+ - "DNA69_5"
