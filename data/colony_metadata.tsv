@@ -1,0 +1,71 @@
+ID	Colony_ID	Location_name	Species	Colony_type	DNA_extracted	Collection_date	Label_upon_collection
+210616_JP_01-01	1	Gede	A. m. littorea	M	Y	16.06.2021	1
+210616_JP_02-01	2	Gede	A. m. littorea	M	Y	16.06.2021	2
+210616_JP_03-01	3	Gede	A. m. littorea	M	Y	16.06.2021	3
+210616_JP_04-01	4	Gede	A. m. littorea	SM	Y	16.06.2021	4
+210616_JP_05-01	5	Gede	A. m. littorea	SM	Y	16.06.2021	5
+210616_JP_06-01	6	Gede	A. m. littorea	SM	Y	16.06.2021	6
+210616_JP_07-01	7	Gede	A. m. littorea	SM	Y	16.06.2021	7
+210616_JP_08-01	8	Gede	A. m. littorea	SM	Y	16.06.2021	8
+210616_JP_09-01	9	Gede	A. m. littorea	SM	Y	16.06.2021	9
+210617_JP_01-01	10	Mtwapa	A. m. littorea	SM	Y	17.06.2021	10
+210617_JP_02-01	11	Mtwapa	A. m. littorea	SM	Y	17.06.2021	11
+210617_JP_03-01	12	Mtwapa	A. m. littorea	SM	Y	17.06.2021	12
+210619_JP_01-01	13	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	13
+210619_JP_02-01	14	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	14
+210619_JP_03-01	15	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	15
+210619_JP_04-01	16	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	16
+210619_JP_05-01	17	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	17
+210619_JP_06-01	18	Arabuko edge	A. m. littorea	SM	Y	19.06.2021	18
+210621_JP_01-01	19	Kilifi	A. m. littorea	W	Y	21.06.2021	19
+210621_JP_02-01	20	Kilifi	A. m. littorea	W	Y	21.06.2021	20
+210621_JP_03-01	21	Kilifi	A. m. littorea	W	Y	21.06.2021	21
+210625_JP_01-01	22	Aberdares	A. m. monticola	W	Y	25.06.2021	22
+210625_JP_02-01	23	Aberdares	A. m. monticola	W	Y	25.06.2021	23
+210811_JP_01-05	24	Turkana	A. m. jemenica	W		11.08.2021	1
+210811_JP_02-05	25	Turkana	A. m. jemenica	W		11.08.2021	2
+210811_JP_03-05	26	Turkana	A. m. jemenica	W		11.08.2021	3
+210812_JP_01-05	27	Turkana	A. m. jemenica	W		12.08.2021	4
+210812_JP_02-05	28	Turkana	A. m. jemenica	W		12.08.2021	5
+210812_JP_03-05	29	Turkana	A. m. jemenica	W		12.08.2021	6
+210812_JP_04-05	30	Turkana	A. m. jemenica	W		12.08.2021	7
+210812_JP_05-01	31	Turkana	A. m. jemenica	W		12.08.2021	8
+210817_JP_01-01	32	Nguruman	A. m. scutellata	W		17.08.2021	NA
+210817_JP_02-01	33	Nguruman	A. m. scutellata	W		17.08.2021	NA
+210817_JP_03-01	34	Nguruman	A. m. scutellata	W		17.08.2021	NA
+210817_JP_04-01	35	Nguruman	A. m. scutellata	W		17.08.2021	NA
+210817_JP_05-01	36	Nguruman	A. m. scutellata	W		17.08.2021	NA
+210824_JP_01-01	37	Muranga, Samburu	A. m. scutellata	W		24.08.2021	NA
+210824_JP_02-01	38	Muranga, Samburu	A. m. scutellata	W		24.08.2021	NA
+210826_JP_01-01	39	Karura forest	A. m. scutellata	W		26.08.2021	NA
+210826_JP_02-01	40	Karura forest	A. m. scutellata	W		26.08.2021	NA
+210912_JP_01-xx	69	Mt Kenya	A. m. monticola	W		12.09.2021	
+210912_JP_02-xx	70	Mt Kenya	A. m. monticola	W		12.09.2021	
+090901_MH_05-01	41	Nyambene Hills Forest	A. m. monticola	W		01.09.2009	52
+090901_MH_06-01	42	Mau Forest	A. m. monticola	W		01.09.2009	71
+090901_MH_07-01	43	Mau Forest	A. m. monticola	W		01.09.2009	72
+090901_MH_08-01	44	Mau Forest	A. m. monticola	W		01.09.2009	74
+090901_MH_09-01	45	Mau Forest	A. m. monticola	W		01.09.2009	82
+090901_MH_10-01	46	Mau Forest	A. m. monticola	W		01.09.2009	87
+090901_MH_11-01	47	Mount Kenya Forest	A. m. monticola	W		01.09.2009	2
+090901_MH_12-01	48	Mount Kenya Forest	A. m. monticola	W		01.09.2009	7
+090901_MH_13-01	49	Mount Kenya Forest	A. m. monticola	W		01.09.2009	11
+090901_MH_14-01	50	Mount Kenya Forest	A. m. monticola	W		01.09.2009	108
+090901_MH_15-01	51	Mount Kenya Forest	A. m. monticola	W		01.09.2009	113
+180225_MH_01-01	52	Werie	A. m. simensis	W		25.02.2018	231
+180225_MH_02-01	53	Werie	A. m. simensis	W		25.02.2018	232
+180225_MH_03-01	54	Werie	A. m. simensis	W		25.02.2018	233
+180225_MH_04-01	55	Werie	A. m. simensis	W		25.02.2018	234
+180225_MH_05-01	56	Werie	A. m. simensis	W		25.02.2018	235
+180314_MH_01-01	57	Wendogenet	A. m. simensis	W		14.03.2018	411
+180314_MH_02-01	58	Wendogenet	A. m. simensis	W		14.03.2018	412
+180314_MH_03-01	59	Wendogenet	A. m. simensis	W		14.03.2018	413
+180315_MH_01-01	60	Entaye	A. m. simensis	W		15.03.2018	421
+180315_MH_02-01	61	Entaye	A. m. simensis	W		15.03.2018	422
+160701_MH_01-01	62	Sekem	A. m. lamarkii	W		01.07.2016	417
+160701_MH_02-01	63	Sekem	A. m. lamarkii	W		01.07.2016	43
+160701_MH_03-01	64	Sekem	A. m. lamarkii	W		01.07.2016	42
+160701_MH_04-01	65	Sekem	A. m. lamarkii	W		01.07.2016	414
+160701_MH_05-01	66	Sekem	A. m. lamarkii	W		01.07.2016	41
+210708_MH_01-01	67	Apiary Hohenheim	A. m. carnica	M		08.07.2021	
+210708_MH_02-01	68	Apiary Hohenheim	A. m. carnica	M		08.07.2021	

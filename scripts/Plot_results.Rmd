@@ -1,0 +1,4 @@
+```{r}
+# metadata file
+metadata_xlsx_path <- "/nas/FAC/FBM/DMF/pengel/spirit/D2c/aprasad/20219999_aprasad_AfricaWildManagedComparison/DataCollection/230221_metadata_compiled.xlsx"
+```
