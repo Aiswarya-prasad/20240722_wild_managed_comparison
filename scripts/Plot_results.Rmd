@@ -1,4 +1,42 @@
+# Load data
+
 ```{r}
 # metadata file
 metadata_xlsx_path <- "/nas/FAC/FBM/DMF/pengel/spirit/D2c/aprasad/20219999_aprasad_AfricaWildManagedComparison/DataCollection/230221_metadata_compiled.xlsx"
 ```
+
+# Raw data summary and QC result
+
+Paired reads were generated acros single or multiple lanes for each sample.
+
+## Library depth
+
+### Across dataset
+
+```{r}
+# plot all read counts as a barplot with x as file and y as number of reads
+```
+
+### Per sample
+
+```{r}
+# plot all read counts as a barplot with x as sample and y as number of reads
+```
+
+### Per subspecies
+
+### Per Location
+
+## Trimming results
+
+### Trimming result across dataset
+
+### Trimming result per sample
+
+## Host filtering results
+
+### Host filtering results across dataset
+
+### Host filtering results per sample
+
+# Assembly and binning results

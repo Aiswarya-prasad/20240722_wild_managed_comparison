@@ -9,10 +9,10 @@ rule raw_qc:
     input:
         reads = lambda wildcards: get_input_file(sample = wildcards.sample, read = wildcards.read, lane = wildcards.lane),
     output:
-        html = "results/00_RawData/fastqc/{sample}/{sample}_{lane}_{read}_fastqc.html",
-        zip = "results/00_RawData/fastqc/{sample}/{sample}_{lane}_{read}_fastqc.zip"
+        html = "results/00_RawQC/{sample}_{lane}_{read}_fastqc.html",
+        zip = "results/00_RawQC/{sample}_{lane}_{read}_fastqc.zip"
     params:
-        outdir = lambda wildcards: f"results/00_RawData/fastqc/{wildcards.sample}",
+        outdir = lambda wildcards: f"results/00_RawQC/{wildcards.sample}",
         outname = lambda wildcards: f"{wildcards.sample}_{wildcards.lane}_{wildcards.read}",
         mailto = "aiswarya.prasad@unil.ch",
         mailtype = "BEGIN,END,FAIL,TIME_LIMIT_80",
@@ -21,8 +21,8 @@ rule raw_qc:
         runtime_s = convertToSec("0-2:10:00"),
     resources:
         mem_mb = 8000
-    log: "results/00_RawData/fastqc/{sample}/{sample}_{lane}_{read}_qc.log"
-    benchmark: "results/00_RawData/fastqc/{sample}/{sample}_{lane}_{read}_qc.benchmark"
+    log: "results/00_RawQC/{sample}/{sample}_{lane}_{read}_qc.log"
+    benchmark: "results/00_RawQC/{sample}/{sample}_{lane}_{read}_qc.benchmark"
     threads: 2
     conda: "../config/envs/trim-qc-env.yaml"
     shell:
@@ -67,7 +67,7 @@ rule trim:
     params:
         jobname="{sample}_{lane}_trim",
         account="pengel_spirit",
-        runtime_s=convertToSec("0-2:10:00"),
+        runtime_s=convertToSec("0-4:10:00"),
     resources:
         mem_mb = 8000
     threads: 4
@@ -76,22 +76,26 @@ rule trim:
     conda: "../config/envs/trim-qc-env.yaml"
     shell:
         """
-        trimmomatic PE -threads {threads} {input.reads1} {input.reads2} {output.reads1} {output.reads1_unpaired} {output.reads2} {output.reads2_unpaired} ILLUMINACLIP:{input.adapters}:2:30:10 LEADING:28 TRAILING:28  MINLEN:60 &> {log}
+        trimmomatic PE -threads {threads} {input.reads1} {input.reads2} \
+            {output.reads1} {output.reads1_unpaired} \
+            {output.reads2} {output.reads2_unpaired} \
+            ILLUMINACLIP:{input.adapters}:2:30:10 LEADING:28 \
+            TRAILING:28  MINLEN:60 &> {log}
         """
 
 rule trim_qc:
     input:
         reads = "results/01_TrimmingFiltering/{sample}_{lane}_{read}.fq.gz",
     output:
-        html="results/01_TrimmingFiltering/fastqc/{sample}/{sample}_{lane}_{read}_fastqc.html",
-        zip="results/01_TrimmingFiltering/fastqc/{sample}/{sample}_{lane}_{read}_fastqc.zip"
+        html="results/01_TrimmedQC/{sample}_{lane}_{read}_fastqc.html",
+        zip="results/01_TrimmedQC/{sample}_{lane}_{read}_fastqc.zip"
     threads: 2
     conda: "../config/envs/trim-qc-env.yaml"
     params:
-        outdir="results/01_TrimmingFiltering/fastqc/",
+        outdir="results/01_TrimmedQC/",
         jobname="{sample}_{lane}_{read}_trim_qc",
         account="pengel_spirit",
-        runtime_s=convertToSec("0-2:10:00"),
+        runtime_s=convertToSec("0-4:10:00"),
     log: "results/01_TrimmingFiltering/fastqc/{sample}/{sample}_{lane}_{read}_trim_qc.log"
     benchmark: "results/01_TrimmingFiltering/fastqc/{sample}/{sample}_{lane}_{read}_trim_qc.benchmark"
     resources:
@@ -101,13 +105,143 @@ rule trim_qc:
         fastqc -t {threads} {input.reads} -o {params.outdir} &> {log}
         """
 
-# data/GCF_003254395.2_Amel_HAv3.1_genomic.fna.gz
+rule get_fastqc_text_outputs_raw:
+    input:
+        fastqc_zip = "results/00_RawQC/{sample}_{lane}_{read}_fastqc.zip"
+    output:
+        text = "results/00_RawQC/{sample}_{lane}_{read}_fastqc.txt"
+    params:
+        jobname="{sample}_{lane}_{read}_get_fastqc_text",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-00:10:00"),
+    resources:
+        mem_mb = 8000
+    log: "results/00_RawQC/{sample}/{sample}_{lane}_{read}_get_fastqc_text.log"
+    benchmark: "results/00_RawQC/{sample}/{sample}_{lane}_{read}_get_fastqc_text.benchmark"
+    shell:
+        """
+        unzip -p {input.fastqc_zip} */fastqc_data.txt > {output.text}
+        """
+
+rule get_fastqc_text_outputs_trimmed:
+    input:
+        fastqc_zip = "results/01_TrimmedQC/{sample}_{lane}_{read}_fastqc.zip"
+    output:
+        text = "results/01_TrimmedQC/{sample}_{lane}_{read}_fastqc.txt"
+    params:
+        jobname="{sample}_{lane}_{read}_get_fastqc_text",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-00:10:00"),
+    resources:
+        mem_mb = 8000
+    log: "results/01_TrimmedQC/{sample}/{sample}_{lane}_{read}_get_fastqc_text.log"
+    benchmark: "results/01_TrimmedQC/{sample}/{sample}_{lane}_{read}_get_fastqc_text.benchmark"
+    shell:
+        """
+        unzip -p {input.fastqc_zip} */fastqc_data.txt > {output.text}
+        """
+
+rule fetch_host_genome:
+    output:
+        host_genome = "data/host_genome/GCF_003254395.2_Amel_HAv3.1_genomic.fna"
+    params:
+        host_genome_link = "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/254/395/GCF_003254395.2_Amel_HAv3.1/GCF_003254395.2_Amel_HAv3.1_genomic.fna.gz",
+        jobname="fetch_host_genome",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-00:10:00"),
+    resources:
+        mem_mb = 8000
+    log: "data/host_genome/fetch_host_genome.log"
+    benchmark: "data/host_genome/fetch_host_genome.benchmark"
+    shell:
+        """
+        wget {params.host_genome_link} -O {output.host_genome}.gz &> {log}
+        echo "Host genome downloaded"
+        gunzip {output.host_genome}.gz &> {log}
+        """
+
+
+rule bowtie_index:
+    input:
+        host_database = "data/host_genome/GCF_003254395.2_Amel_HAv3.1_genomic.fna"
+    output:
+        bowtie_index = multiext("data/host_genome/GCF_003254395.2_Amel_HAv3.1_genomic.fna", ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2")
+    params:
+        jobname="bowtie_index",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-07:10:00"),
+    resources:
+        mem_mb = convertToMb("50G")
+    threads: 4
+    log: "results/02_HostFiltering/bowtie_index.log"
+    benchmark: "results/02_HostFiltering/bowtie_index.benchmark"
+    conda: "../config/envs/mapping-bowtie-env.yaml"
+    shell:
+        """
+        bowtie2-build {input.host_database} {input.host_database} &> {log}
+        """
+
+rule map_to_host_bowtie2:
+    input:
+        reads1 = lambda wildcards: get_trimmed_files(sample = wildcards.sample, read = "1"),
+        reads2 = lambda wildcards: get_trimmed_files(sample = wildcards.sample, read = "2"),
+        bowtie_index = multiext("data/host_genome/GCF_003254395.2_Amel_HAv3.1_genomic.fna", ".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"),
+        host_database = "data/host_genome/GCF_003254395.2_Amel_HAv3.1_genomic.fna"
+    output:
+        bam = temp("results/02_HostFiltering/{sample}/{sample}_bowtie.bam"),
+        flagstat = "results/02_HostFiltering/{sample}/{sample}_bowtie_flagstat.tsv",
+    params:
+        jobname="{sample}_map_to_host_bowtie",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-17:10:00"),
+        input_files_string1 = lambda wildcards: ','.join(get_trimmed_files(sample = wildcards.sample, read = "1")),
+        input_files_string2 = lambda wildcards: ','.join(get_trimmed_files(sample = wildcards.sample, read = "2")),
+    resources:
+        mem_mb = convertToMb("50G")
+    threads: 4
+    log: "results/02_HostFiltering/{sample}/{sample}_map_to_rep_MAGs_bowtie.log"
+    benchmark: "results/02_HostFiltering/{sample}/{sample}_map_to_rep_MAGs_bowtie.benchmark"
+    conda: "../config/envs/mapping-bowtie-env.yaml"
+    shell:
+        """
+        bowtie2 -x {input.host_database} -1 {params.input_files_string1} \
+            -2 {params.input_files_string1} \
+            | samtools view -bh - | samtools sort - > {output.bam}
+        samtools flagstat {output.bam} > {output.flagstat}
+        """
+
+rule get_non_host_reads:
+    input:
+        bam = "results/02_HostFiltering/{sample}/{sample}_bowtie.bam",
+    output:
+        reads1 = "results/02_HostFiltering/{sample}/{sample}_R1_hostfilt.fq.gz",
+        reads2 = "results/02_HostFiltering/{sample}/{sample}_R2_hostfilt.fq.gz",
+        bam_unmapped = temp("results/02_HostFiltering/{sample}/{sample}_non_host_unmapped.bam"),
+    params:
+        jobname="{sample}_get_non_host_reads",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-07:10:00"),
+    resources:
+        mem_mb = convertToMb("50G")
+    threads: 4
+    log: "results/02_HostFiltering/{sample}/{sample}_get_non_host_reads.log"
+    benchmark: "results/02_HostFiltering/{sample}/{sample}_get_non_host_reads.benchmark"
+    conda: "../config/envs/mapping-bowtie-env.yaml"
+    shell:
+        """
+        samtools view -b -f 4 {input.bam} | samtools sort -n - > {output.bam_unmapped}
+        outreads1={output.reads1}
+        outreads2={output.reads2}
+        bedtools bamtofastq -i {input.bam} -fq ${{outreads1/.gz/}} -fq2 ${{outreads2/.gz/}} &> {log}
+        gzip ${{outreads1/.gz/}}
+        gzip ${{outreads2/.gz/}}
+        """
 
 # rule concatenate_reads:
 #     input:
-#         reads = lambda wildcards: [f"results/00_trimmedreads/{x.split('.fastq.gz')[0]}_trim.fastq.gz" for x in get_list_of_values(get_renamed_input_files({key: raw_paths_dict[key] for key in raw_paths_dict.keys() if key == wildcards.sample})) if f"_{wildcards.read}" in x]
+#         reads = lambda wildcards: [f"results/00_trimmedreads/{x.split('.fq.gz')[0]}_trim.fq.gz" for x in get_list_of_values(get_renamed_input_files({key: raw_paths_dict[key] for key in raw_paths_dict.keys() if key == wildcards.sample})) if f"_{wildcards.read}" in x]
 #     output:
-#         concat_reads = "results/01_trimmedconcatreads/{sample}_{read}.fastq.gz"
+#         concat_reads = "results/01_trimmedconcatreads/{sample}_{read}.fq.gz"
 #     threads: 2
 #     conda: "../config/envs/trim-qc-env.yaml"
 #     params:
@@ -128,12 +262,12 @@ rule trim_qc:
 # rest of the pipeline starts from clean reads so commenting out this rule for now
 # rule re_pair_reads:
 #     input:
-#         reads1 = "results/01_trimmedconcatreads/{sample}_R1.fastq.gz",
-#         reads2 = "results/01_trimmedconcatreads/{sample}_R2.fastq.gz"
+#         reads1 = "results/01_trimmedconcatreads/{sample}_R1.fq.gz",
+#         reads2 = "results/01_trimmedconcatreads/{sample}_R2.fq.gz"
 #     output:
-#         reads1 = "results/01_cleanreads/{sample}_R1_repaired.fastq.gz",
-#         reads2 = "results/01_cleanreads/{sample}_R2_repaired.fastq.gz",
-#         singletons = "results/01_cleanreads/{sample}_singletons.fastq.gz"
+#         reads1 = "results/01_cleanreads/{sample}_R1_repaired.fq.gz",
+#         reads2 = "results/01_cleanreads/{sample}_R2_repaired.fq.gz",
+#         singletons = "results/01_cleanreads/{sample}_singletons.fq.gz"
 #     params:
 #         java_mem="170", # 70 worked for most but 11/150 samples needed more - should not be more than 85% total memory requested
 #      
@@ -145,186 +279,8 @@ rule trim_qc:
 #     threads: 2 # 4 worked for most but 11/150 samples needed more
 #     log: "results/01_cleanreads/{sample}_repaired.log"
 #     benchmark: "results/01_cleanreads/{sample}_repaired.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
+#     conda: "../config/envs/mapping-bowtie-env.yaml"
 #     shell:
 #         """
 #         repair.sh -Xmx{params.java_mem}g threads={threads} in1={input.reads1} in2={input.reads2} out1={output.reads1} out2={output.reads2} outs={output.singletons} repair &> {log}
 #         """
-
-# map to host and then the unmapped ones to the MAG database
-# rule get_host_unmapd:
-#     input:
-#         bam = "results/03_host_mapping/{sample}_hostfiltered.bam", # bam with unmapped reads from host mapping
-#     output:
-#         reads1 = temp("results/04_MapToDBs/{sample}/{sample}_host_unmapd_R1.fastq.gz"),
-#         reads2 = temp("results/04_MapToDBs/{sample}/{sample}_host_unmapd_R2.fastq.gz"),
-#         bam_unmapped = temp("results/04_MapToDBs/{sample}/{sample}_host_unmapd.bam"),
-#     params:
-#      
-#         jobname="{sample}_get_host_unmapd",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-07:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_get_host_unmapd.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_get_host_unmapd.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         samtools view -b {input.bam} | samtools sort -n - > {output.bam_unmapped}
-#         outreads1={output.reads1}
-#         outreads2={output.reads2}
-#         bedtools bamtofastq -i {input.bam} -fq ${{outreads1/.gz/}} -fq2 ${{outreads2/.gz/}} &> {log}
-#         gzip ${{outreads1/.gz/}}
-#         gzip ${{outreads2/.gz/}}
-#         """
-
-
-# rule host_unmapd_map_to_mags_rep:
-#     input:
-#         bwa_index = multiext("results/10_instrain/00_prepare_mags/mag_rep_database.fa", ".amb", ".ann", ".bwt", ".pac", ".sa"),
-#         reads1_hf = "results/04_MapToDBs/{sample}/{sample}_host_unmapd_R1.fastq.gz",
-#         reads2_hf = "results/04_MapToDBs/{sample}/{sample}_host_unmapd_R2.fastq.gz",
-#         mag_rep_database = "results/10_instrain/00_prepare_mags/mag_rep_database.fa"
-#     output:
-#         bam = temp("results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_MAGs_rep.bam"),
-#         flagstat_hf = "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_MAGs_rep.flagstat"
-#     params:
-#      
-#         jobname="{sample}_host_unmapd_map_to_mags_rep",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-17:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_to_mags_rep.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_to_mags_rep.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         bwa mem -t 4 {input.mag_rep_database} {input.reads1_hf} {input.reads2_hf} | samtools view -bh - | samtools sort - > {output.bam}
-#         samtools flagstat {output.bam} > {output.flagstat_hf}
-#         """
-
-# rule get_host_unmapd_map_mags_unmapped:
-#     input:
-#         bam = "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_MAGs_rep.bam",
-#     output:
-#         reads1 = "results/04_MapToDBs/{sample}/{sample}_R1_host_unmapd_map_MAGs_rep_unmapped.fastq.gz",
-#         reads2 = "results/04_MapToDBs/{sample}/{sample}_R2_host_unmapd_map_MAGs_rep_unmapped.fastq.gz",
-#         bam_unmapped = temp("results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_MAGs_rep_unmapped.bam"),
-#     params:
-#      
-#         jobname="{sample}_get_host_unmapd_map_mags_unmapped",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-17:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_mags_rep.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_host_unmapd_map_mags_rep.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         samtools view -b -f 4 {input.bam} | samtools sort -n - > {output.bam_unmapped}
-#         outreads1={output.reads1}
-#         outreads2={output.reads2}
-#         bedtools bamtofastq -i {input.bam} -fq ${{outreads1/.gz/}} -fq2 ${{outreads2/.gz/}} &> {log}
-#         gzip ${{outreads1/.gz/}}
-#         gzip ${{outreads2/.gz/}}
-#         """
-
-# rule get_unmapd_to_rep_MAGs:
-#     input:
-#         bam = "results/10_instrain/01_mapping/{sample}/{sample}.bam",
-#     output:
-#         reads1 = "results/04_MapToDBs/{sample}/{sample}_R1_unmapd_rep_MAGs.fastq.gz",
-#         reads2 = "results/04_MapToDBs/{sample}/{sample}_R2_unmapd_rep_MAGs.fastq.gz",
-#         bam_unmapped = temp("results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_unmapped.bam"),
-#     params:
-#      
-#         jobname="{sample}_get_unmapd_to_rep_MAGs",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-07:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_get_unmapd_to_rep_MAGs.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_get_unmapd_to_rep_MAGs.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         samtools view -b -f 4 {input.bam} | samtools sort -n - > {output.bam_unmapped}
-#         outreads1={output.reads1}
-#         outreads2={output.reads2}
-#         bedtools bamtofastq -i {input.bam} -fq ${{outreads1/.gz/}} -fq2 ${{outreads2/.gz/}} &> {log}
-#         gzip ${{outreads1/.gz/}}
-#         gzip ${{outreads2/.gz/}}
-#         """
-
-
-# rule unmapd_to_rep_MAGs_host_mapping:
-#     input:
-#         reads1 = "results/04_MapToDBs/{sample}/{sample}_R1_unmapd_rep_MAGs.fastq.gz",
-#         reads2 = "results/04_MapToDBs/{sample}/{sample}_R2_unmapd_rep_MAGs.fastq.gz",
-#         host_db = "data/host_database/apis_bees_db.fasta",
-#         host_db_index = multiext("data/host_database/apis_bees_db.fasta", ".amb", ".ann", ".bwt", ".pac", ".sa")
-#     output:
-#         bam = temp("results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_mapping.bam"),
-#         flagstat = "results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_mapping.flagstat",
-#     params:
-#      
-#         jobname="{sample}_unmapd_rep_MAGs_host_mapping",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-17:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_mapping.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_mapping.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         bwa mem -t {threads} {input.host_db} {input.reads1} {input.reads2} | samtools view -bh - | samtools sort - > {output.bam}
-#         samtools flagstat {output.bam} > {output.flagstat}
-#         """
-
-# rule get_unmapd_to_rep_MAGs_unmaped_host:
-#     input:
-#         bam = "results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_mapping.bam",
-#     output:
-#         reads1 = "results/04_MapToDBs/{sample}/{sample}_R1_unmapd_rep_MAGs_host_unmapd.fastq.gz",
-#         reads2 = "results/04_MapToDBs/{sample}/{sample}_R2_unmapd_rep_MAGs_host_unmapd.fastq.gz",
-#         bam_unmapped = temp("results/04_MapToDBs/{sample}/{sample}_unmapd_rep_MAGs_host_unmapd.bam"),
-#     params:
-#      
-#         jobname="{sample}_get_unmapd_to_rep_MAGs",
-#         account="pengel_spirit",
-#         runtime_s=convertToSec("0-17:10:00"),
-#     resources:
-#         mem_mb = convertToMb("50G")
-#     threads: 4
-#     log: "results/04_MapToDBs/{sample}/{sample}_get_unmapd_to_rep_MAGs.log"
-#     benchmark: "results/04_MapToDBs/{sample}/{sample}_get_unmapd_to_rep_MAGs.benchmark"
-#     conda: "../config/envs/mapping-env.yaml"
-#     shell:
-#         """
-#         samtools view -b -f 4 {input.bam} | samtools sort -n - > {output.bam_unmapped}
-#         outreads1={output.reads1}
-#         outreads2={output.reads2}
-#         bedtools bamtofastq -i {input.bam} -fq ${{outreads1/.gz/}} -fq2 ${{outreads2/.gz/}} &> {log}
-#         gzip ${{outreads1/.gz/}}
-#         gzip ${{outreads2/.gz/}}
-#         """
-
-# later also check that rep mags recruit as many reads as "all MAGs" together would
-
-# # map reads unmapped to the rep database now to "all MAGs"
-# # to see if they are unmapped becuase they are missing from the rep database
-# # other better way to check this?
-# rule unmapd_rep_MAGs_map_all_MAGs_hq:
-#     input:
-#         reads1 = "results/04_MapToDBs/{sample}/{sample}_R1_unmapd_rep_MAGs.fastq.gz",
-#         reads2 = "results/04_MapToDBs/{sample}/{sample}_R2_unmapd_rep_MAGs.fastq.gz",
-#         all_mags

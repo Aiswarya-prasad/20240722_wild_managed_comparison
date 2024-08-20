@@ -26,5 +26,8 @@ for file in trimmed_files:
     with gzip.open(file, "rt") as handle:
         for record in SeqIO.parse(handle, "fastq"):
             lengths.append(len(record.seq))
+            print(len(record.seq))
     trimmed_median_lengths[file] = np.median(lengths)
 
+
+# read number of reads from fastq text files and make a table for R which is written in results/visualization

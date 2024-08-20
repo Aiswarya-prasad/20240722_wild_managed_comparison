@@ -10,6 +10,8 @@ dependencies:
 """
 
 import os
+import sys
+import shutil
 import glob
 import yaml
 import itertools
@@ -26,15 +28,20 @@ include: "common.smk"
 
 # SAMPLES = [os.path.basename(x) for x in glob.glob('results/00_RawData/from_Novogene/*') if os.path.basename(x).startswith('DNA')]
 raw_paths_dict = {x: glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz') for x in SAMPLES}
-raw_qc_paths = [os.path.join(f'results/00_RawData/fastqc/{y.split("/")[3]}', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.html') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
+raw_qc_paths = [os.path.join(f'results/00_RawQC/', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.html') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
 trimmed_paths_dict = {x: [os.path.join(f'results/01_TrimmingFiltering', remove_run_name_fluff(os.path.basename(y))) for y in glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz')] for x in SAMPLES}
-# trimmed_qc_paths = [os.path.join(f'results/01_TrimmingFiltering/fastqc/{os.path.basename(y).split("_L")[0]}/', os.path.basename(y)).replace('.fq.gz', '_fastqc.html') for y in list(chain(*trimmed_paths_dict.values()))]
+trimmed_qc_paths = [os.path.join(f'results/01_TrimmedQC/', os.path.basename(y)).replace('.fq.gz', '_fastqc.html') for y in list(chain(*trimmed_paths_dict.values()))]
+fastqc_text_paths_raw = [os.path.join(f'results/00_RawQC/', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.txt') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
+fastqc_text_paths_trim = [os.path.join(f'results/01_TrimmedQC/', os.path.basename(y)).replace('.fq.gz', '_fastqc.txt') for y in list(chain(*trimmed_paths_dict.values()))]
 
 rule targets:
     input:
         raw_files = list(chain(*raw_paths_dict.values())),
         raw_qc_files = raw_qc_paths,
-        # trimmed_files = trimmed_paths_dict.values(),
-        # trimmed_files_qc = trimmed_qc_paths,
+        trimmed_files = trimmed_paths_dict.values(),
+        trimmed_files_qc = trimmed_qc_paths,
+        qc_text_raw = fastqc_text_paths_raw,
+        qc_text_trim = fastqc_text_paths_trim,
+        host_filtered_reads = expand('results/02_HostFiltering/{sample}/{sample}_R{read}_hostfilt.fq.gz', sample=SAMPLES, read=['1', '2']),
 
 include: "trim-qc.smk"

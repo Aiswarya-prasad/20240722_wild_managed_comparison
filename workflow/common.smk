@@ -49,3 +49,16 @@ def get_input_file(sample, lane, read):
     '''
     the_path = name_clean_dict[f'results/00_RawData/from_Novogene/{sample}/{sample}_{lane}_{read}.fq.gz']
     return(the_path)
+
+trimmed_paths_dict = {x: [os.path.join(f'results/01_TrimmingFiltering', remove_run_name_fluff(os.path.basename(y))) for y in glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz')] for x in SAMPLES}
+
+def get_trimmed_files(sample, read):
+    '''
+    This function returns the path of all the trimmed files given the sample and read
+    since there are multiple lanes, it returns a list that can be used in the rule
+    running bowtie which asks for them to be a comma separated list
+    '''
+    the_files = [x for x in trimmed_paths_dict[sample] if x.endswith(f'_{read}.fq.gz')]
+    return(the_files)
+
+    
