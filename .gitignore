@@ -41,3 +41,6 @@ results/._.DS_Store
 results/.DS_Store
 
 results/*
+
+logs/*
+data/host_genome/*
