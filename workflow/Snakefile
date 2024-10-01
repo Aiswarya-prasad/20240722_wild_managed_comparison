@@ -22,17 +22,18 @@ from itertools import chain
 configfile: "config/config.yml"
 
 SAMPLES = config["SAMPLES_RAW"]
+PROJECT_FULL_PATH = config["PROJECT_FULL_PATH"]
 
 
 include: "common.smk"
 
-# SAMPLES = [os.path.basename(x) for x in glob.glob('results/00_RawData/from_Novogene/*') if os.path.basename(x).startswith('DNA')]
-raw_paths_dict = {x: glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz') for x in SAMPLES}
-raw_qc_paths = [os.path.join(f'results/00_RawQC/', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.html') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
-trimmed_paths_dict = {x: [os.path.join(f'results/01_TrimmingFiltering', remove_run_name_fluff(os.path.basename(y))) for y in glob.glob(f'results/00_RawData/from_Novogene/{x}/*.fq.gz')] for x in SAMPLES}
-trimmed_qc_paths = [os.path.join(f'results/01_TrimmedQC/', os.path.basename(y)).replace('.fq.gz', '_fastqc.html') for y in list(chain(*trimmed_paths_dict.values()))]
-fastqc_text_paths_raw = [os.path.join(f'results/00_RawQC/', remove_run_name_fluff(os.path.basename(y))).replace('.fq.gz', '_fastqc.txt') for y in glob.glob(f'results/00_RawData/from_Novogene/*/*.fq.gz')]
-fastqc_text_paths_trim = [os.path.join(f'results/01_TrimmedQC/', os.path.basename(y)).replace('.fq.gz', '_fastqc.txt') for y in list(chain(*trimmed_paths_dict.values()))]
+# SAMPLES = [os.path.basename(x) for x in glob.glob("results/00_RawData/from_Novogene/*") if os.path.basename(x).startswith("DNA")]
+raw_paths_dict = {x: glob.glob(f"results/00_RawData/from_Novogene/{x}/*.fq.gz") for x in SAMPLES}
+raw_qc_paths = [os.path.join(f"results/00_RawQC/", remove_run_name_fluff(os.path.basename(y))).replace(".fq.gz", "_fastqc.html") for y in glob.glob(f"results/00_RawData/from_Novogene/*/*.fq.gz")]
+trimmed_paths_dict = {x: [os.path.join(f"results/01_TrimmingFiltering", remove_run_name_fluff(os.path.basename(y))) for y in glob.glob(f"results/00_RawData/from_Novogene/{x}/*.fq.gz")] for x in SAMPLES}
+trimmed_qc_paths = [os.path.join(f"results/01_TrimmedQC/", os.path.basename(y)).replace(".fq.gz", "_fastqc.html") for y in list(chain(*trimmed_paths_dict.values()))]
+fastqc_text_paths_raw = [os.path.join(f"results/00_RawQC/", remove_run_name_fluff(os.path.basename(y))).replace(".fq.gz", "_fastqc.txt") for y in glob.glob(f"results/00_RawData/from_Novogene/*/*.fq.gz")]
+fastqc_text_paths_trim = [os.path.join(f"results/01_TrimmedQC/", os.path.basename(y)).replace(".fq.gz", "_fastqc.txt") for y in list(chain(*trimmed_paths_dict.values()))]
 
 rule targets:
     input:
@@ -42,6 +43,13 @@ rule targets:
         trimmed_files_qc = trimmed_qc_paths,
         qc_text_raw = fastqc_text_paths_raw,
         qc_text_trim = fastqc_text_paths_trim,
-        host_filtered_reads = expand('results/02_HostFiltering/{sample}/{sample}_R{read}_hostfilt.fq.gz', sample=SAMPLES, read=['1', '2']),
+        host_mapping_reads = expand("results/02_HostMapping/{sample}/{sample}_R{read}_filt.fq.gz", sample=SAMPLES, read=["1", "2"]),
+        scaffolds = expand("results/03_Assembly/{sample}/{sample}_scaffolds_1k_filtered.fasta", sample=SAMPLES),
+        quast_marker = expand("results/03_Assembly/{sample}/{sample}_quast_marker.done", sample=SAMPLES),
+        simka_dir = "results/04_binning_backmapping/simka_out",
+        # binning = expand("results/04_Binning/{sample}/{sample}_binning_done", sample=SAMPLES),
 
 include: "trim-qc.smk"
+include: "host_mapping_depleting.smk"
+include: "assembly-qc.smk"
+include: "binning_backmapping.smk"

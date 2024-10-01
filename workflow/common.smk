@@ -61,4 +61,12 @@ def get_trimmed_files(sample, read):
     the_files = [x for x in trimmed_paths_dict[sample] if x.endswith(f'_{read}.fq.gz')]
     return(the_files)
 
-    
+def order_csv_list_string(string):
+    '''
+    This function takes a comma separated list of files and orders them by lane
+    this is a naive implementation which assumes that the lane number appears before any
+    other characters that are different between the files so it can be sorted alphabetically
+    '''
+    the_list = string.split(',')
+    the_list.sort()
+    return(','.join(the_list))

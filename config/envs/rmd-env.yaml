@@ -6,7 +6,7 @@ channels:
   - pwwang
 
 dependencies:
-  - r-base>=4.3.0
+  - r-base>=4.3.2
   - r-rmarkdown
   - r-ggplot2
   - r-codetools
@@ -26,7 +26,6 @@ dependencies:
   - r-ape
   - r-vegan
   - r-ggvenndiagram
-  - r-venndiagram
   - r-ggforce
   - r-ggdendro
   - r-pheatmap
@@ -66,7 +65,7 @@ dependencies:
   - bioconductor-complexheatmap
   - bioconductor-genomeinfodb
   - bioconductor-microbiome
-  - bioconductor-phyloseq
+  - bioconductor-ggkegg
   - bioconductor-annotationdbi
   - bioconductor-biocfilecache
   - bioconductor-keggrest
@@ -79,3 +78,6 @@ dependencies:
   - r-xml
   - cairo
   - r-cairo
+  - r-gplots
+  - r-randomforest
+  - r-scatterpie

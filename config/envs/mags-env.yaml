@@ -19,5 +19,4 @@ dependencies:
   - motulizer
   - mmseqs2
   - whokaryote
-  # I wont be using this anymore so there is a new gtdb environment
-  - gtdbtk=2.3.0
+  - simka=1.5.3

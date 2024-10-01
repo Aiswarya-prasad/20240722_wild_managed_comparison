@@ -2,30 +2,81 @@
 
 ```{r}
 # metadata file
-metadata_xlsx_path <- "/nas/FAC/FBM/DMF/pengel/spirit/D2c/aprasad/20219999_aprasad_AfricaWildManagedComparison/DataCollection/230221_metadata_compiled.xlsx"
+source('scripts/Utilities.R', chdir = TRUE)
+colony_metadata <- read.csv("data/colony_metadata.tsv", sep = "\t", header = T)
+metadata_df <- read.csv("data/sample_extraction_metadata.tsv", sep = "\t", header = T) %>%
+                    mutate(Sample = Vectorize(sample_name_from_shortname)(Label)) %>%
+                    left_join(colony_metadata, by=c("Colony"="Colony_ID"))
+colnames(metadata_df)
 ```
+
+# Dataset summary
+
+```{r}
+table(metadata_df$Colony_type)
+```
+ M  SM   W 
+ 15  15 130 
+
+```{r}
+table(metadata_df$Species)
+```
+A. m. carnica   A. m. jemenica   A. m. lamarkii   A. m. littorea 
+              10               25               25               25 
+ A. m. monticola A. m. scutellata   A. m. simensis 
+              25               25               25
+
+```{r}
+table(metadata_df$Species, metadata_df$Colony_type)
+```
+                    M SM  W
+  A. m. carnica    10  0  0
+  A. m. jemenica    0  0 25
+  A. m. lamarkii    0  0 25
+  A. m. littorea    5 15  5
+  A. m. monticola   0  0 25
+  A. m. scutellata  0  0 25
+  A. m. simensis    0  0 25
+
+```{r}
+table(metadata_df$Species, metadata_df$Location_name)
+```
+
+```{r}
+table(metadata_df$Location_name)
+```
+Aberdares      Apiary Hohenheim          Arabuko edge 
+                    5                    10                     5 
+               Entaye                  Gede         Karura forest 
+                    5                    10                    10 
+               Kilifi            Mau Forest    Mount Kenya Forest 
+                    5                     5                     5 
+             Mt Kenya                Mtwapa      Muranga, Samburu 
+                    5                     5                     5 
+             Nguruman Nyambene Hills Forest                 Sekem 
+                   10                     5                    25 
+              Turkana            Wendogenet                 Werie 
+                   25                    10                    10
 
 # Raw data summary and QC result
 
 Paired reads were generated acros single or multiple lanes for each sample.
+
+Generate tsv files `number_of_reads.tsv` and `number_of_reads_mapping.tsv` for visualization using `scripts/Check_seq_lengths.py`.
 
 ## Library depth
 
 ### Across dataset
 
 ```{r}
-# plot all read counts as a barplot with x as file and y as number of reads
+df_numbers <- read.csv("results/visualization/number_of_reads.tsv", sep="\t", row.names=NULL, header=T)
+ggplot() +
+    geom_bar(data=df_numbers, aes(x=sample, y=raw_reads), stat="identity") +
+    labs(title="Number of reads per sample", x="Sample", y="Number of reads") +
+    scale_y_continuous(labels=unit_format(unit = "M", scale = 1e-6)) +
+    make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
+ggsave("results/figures/00-total_number_of_reads.pdf")
 ```
-
-### Per sample
-
-```{r}
-# plot all read counts as a barplot with x as sample and y as number of reads
-```
-
-### Per subspecies
-
-### Per Location
 
 ## Trimming results
 
@@ -35,8 +86,86 @@ Paired reads were generated acros single or multiple lanes for each sample.
 
 ## Host filtering results
 
-### Host filtering results across dataset
+```{r}
+df_mapping_results <- read.csv("results/visualization/number_of_reads_mapping.tsv", sep="\t", row.names=NULL, header=T) %>%
+                        left_join(metadata_df %>% select(Sample, Species, Location_name, Colony_type), by=c("sample"="Sample"))
+df_plot <- df_mapping_results %>%
+            select(sample, total_reads, host_reads, Species) %>%
+            mutate(non_host_mapped = total_reads - host_reads) %>%
+            select(-total_reads) %>%
+            gather(key="type", value="reads", -sample, -Species)
+ggplot() +
+    geom_bar(data=df_plot, aes(x=sample, y=reads, fill=type), stat="identity") +
+    labs(title="Number of host reads per sample", x="Sample", y="Number of host reads") +
+    scale_y_continuous(labels=unit_format(unit = "M", scale = 1e-6)) +
+    facet_wrap(~Species, scales = "free_x") +
+    make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
+ggsave("results/figures/01-number_of_host_reads_species.pdf")
+```
 
-### Host filtering results per sample
+```{r}
+df_plot <- df_mapping_results %>%
+            select(sample, total_reads, host_mapped_depletion, Location_name) %>%
+            mutate(reads_for_assembly = total_reads - host_mapped_depletion) %>%
+            select(-total_reads) %>%
+            gather(key="type", value="reads", -sample, -Location_name)
+ggplot() +
+    geom_bar(data=df_plot, aes(x=sample, y=reads, fill=type), stat="identity") +
+    labs(title="Number of host reads per sample", x="Sample", y="Number of host reads") +
+    scale_y_continuous(labels=unit_format(unit = "M", scale = 1e-6)) +
+    facet_wrap(~Location_name, scales = "free_x") +
+    make_theme(x_angle = 45, x_size = 7, x_hj = 1, x_vj = 1)
+ggsave("results/figures/01-number_of_host_reads_location.pdf")
+```
 
 # Assembly and binning results
+
+## Assembly results - read from quast
+
+```{r}
+quast_df <- data.frame()
+for (sample in metadata_df$Sample) {
+    quast_file <- paste("results/03_Assembly/", sample, "/", sample, "_quast_report/transposed_report.tsv", sep="")
+    if (file.exists(quast_file)) {
+        quast_df <- rbind(quast_df, read.csv(quast_file, sep="\t", header=T))
+    }
+}
+quast_df_filt <- quast_df %>%
+                    filter(grepl("filtered", Assembly)) %>%
+                    mutate(Assembly = gsub("_scaffolds_1k_filtered", "", Assembly)) %>%
+                    left_join(metadata_df %>% select(Sample, Species, Location_name, Colony_type), by=c("Assembly"="Sample"))
+```
+### Total length of assembly
+
+```{r}
+ggplot() +
+    geom_bar(data=quast_df_filt, aes(x=Assembly, y=Total.length), stat="identity") +
+    labs(title="Total length of assembly", x="Assembly", y="Total length") +
+    scale_y_continuous(labels=unit_format(unit = "M", scale = 1e-6)) +
+    facet_wrap(~Species, scales = "free_x") +
+    make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
+ggsave("results/figures/03-total_length_of_assembly_species.pdf")
+```
+
+### Contigs bigger than or equal to 10000 bp
+
+```{r}
+ggplot() +
+    geom_bar(data=quast_df_filt, aes(x=Assembly, y=X..contigs.....10000.bp.), stat="identity") +
+    labs(title="Contigs >= 10000bp of assembly", x="Assembly", y="Contigs >= 10000bp") +
+    facet_wrap(~Species, scales = "free_x") +
+    make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
+ggsave("results/figures/03-Contigs_geq_10000bp_of_assembly_species.pdf")
+```
+
+### Total length bigger than or equal to 10000 bp
+
+```{r}
+ggplot() +
+    geom_bar(data=quast_df_filt, aes(x=Assembly, y=Total.length.....1000.bp.), stat="identity") +
+    labs(title="Total length >= 10000bp of assembly", x="Assembly", y="Total length >= 10000bp") +
+    scale_y_continuous(labels=unit_format(unit = "M", scale = 1e-6)) +
+    facet_wrap(~Species, scales = "free_x") +
+    make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
+ggsave("results/figures/03-Total_length_geq_10000bp_of_assembly_species.pdf")
+```
