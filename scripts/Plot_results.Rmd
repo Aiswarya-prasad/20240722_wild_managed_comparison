@@ -118,7 +118,7 @@ ggplot() +
 ggsave("results/figures/01-number_of_host_reads_location.pdf")
 ```
 
-# Assembly and binning results
+# Assembly results
 
 ## Assembly results - read from quast
 
@@ -168,4 +168,46 @@ ggplot() +
     facet_wrap(~Species, scales = "free_x") +
     make_theme(x_angle=90, x_size=5, x_hj=1, x_vj=0.5)
 ggsave("results/figures/03-Total_length_geq_10000bp_of_assembly_species.pdf")
+```
+
+# Simka k-mer similarity
+
+```{r}
+matabjac <- as.matrix(read.csv("results/04_binning_backmapping/simka_out/mat_abundance_jaccard.csv.gz", sep = ";", header = T, row.names = 1))
+matabjac <- (1 - matabjac) * 100
+# add color bar showing subspecies
+Species_names <- matabjac %>% rownames() %>% as.data.frame() %>% left_join(metadata_df %>% select(Sample, Species), by=c("."="Sample")) %>% select(Species) %>% pull
+top_annotation <- HeatmapAnnotation(Subspecies = Species_names,
+                                    col = list(Subspecies = Species_colors),
+                                    annotation_name_side = "left")
+left_annotation <- rowAnnotation(Subspecies = Species_names,
+                                    col = list(Subspecies = Species_colors),
+                                    annotation_name_side = "bottom")
+# make a complexHeatmap object
+heatmap <- Heatmap(matabjac,
+                   name = "Jaccard dissimilarity by k-mers",
+                   col = colorRamp2(c(0, 10, 20, 40, 100), c("#f1eef6", "#bdc9e1", "#0570b0", "#023858", "#000000")),
+                   cluster_rows = TRUE,
+                   cluster_columns = TRUE,
+                   top_annotation = top_annotation,
+                   left_annotation = left_annotation,
+                   show_row_names = TRUE,
+                   show_column_names = TRUE)
+pdf("results/figures/04-simka_kmer_similarity.pdf", width = 15, height = 15)
+draw(heatmap, merge_legend = TRUE)
+dev.off()
+
+# pcoa
+pcoa <- cmdscale(as.dist(matabjac), k=2)
+pcoa_df <- data.frame(Sample = rownames(matabjac), PC1 = pcoa[,1], PC2 = pcoa[,2]) %>%
+            left_join(metadata_df %>% select(Sample, Species, Location_name, Colony_type), by=c("Sample"="Sample"))
+ggplot() +
+    geom_point(data=pcoa_df, aes(x=PC1, y=PC2, color=Species, size = 5)) +
+    labs(title="PCoA of k-mer similarity", x="PC1", y="PC2") +
+    xlim(-3,3) +
+    ylim(-3,3) +
+    scale_color_manual(values = Species_colors) +
+    make_theme(setCol = F)
+ggsave("results/figures/04-simka_kmer_similarity_pcoa.pdf")
+
 ```

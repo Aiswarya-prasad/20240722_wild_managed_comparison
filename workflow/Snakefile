@@ -16,6 +16,7 @@ import glob
 import yaml
 import itertools
 import subprocess
+import pandas as pd
 from itertools import chain
 
 
@@ -23,7 +24,7 @@ configfile: "config/config.yml"
 
 SAMPLES = config["SAMPLES_RAW"]
 PROJECT_FULL_PATH = config["PROJECT_FULL_PATH"]
-
+SCRATCH_PATH = config["SCRATCH_PATH"]
 
 include: "common.smk"
 
@@ -46,8 +47,8 @@ rule targets:
         host_mapping_reads = expand("results/02_HostMapping/{sample}/{sample}_R{read}_filt.fq.gz", sample=SAMPLES, read=["1", "2"]),
         scaffolds = expand("results/03_Assembly/{sample}/{sample}_scaffolds_1k_filtered.fasta", sample=SAMPLES),
         quast_marker = expand("results/03_Assembly/{sample}/{sample}_quast_marker.done", sample=SAMPLES),
-        simka_dir = "results/04_binning_backmapping/simka_out",
-        # binning = expand("results/04_Binning/{sample}/{sample}_binning_done", sample=SAMPLES),
+        # simka_comb = expand("results/04_binning_backmapping/simka_parsed/combinations_{dist}.txt", dist=["jaccard"]),
+        merged_depth_file = expand("results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_top50_samples.depth", assembly=SAMPLES),
 
 include: "trim-qc.smk"
 include: "host_mapping_depleting.smk"

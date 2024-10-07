@@ -70,3 +70,16 @@ def order_csv_list_string(string):
     the_list = string.split(',')
     the_list.sort()
     return(','.join(the_list))
+
+def top50_samples_for_backmapping(comb_file, depth_files_prefix, assembly_name):
+    '''
+    This function reads the combined file made by parsing the simka output
+    and gets the top 50 samples that match given assembly and returns a list
+    of file names matching the depth of the assembly vs those samples
+    '''
+    comb_table = pd.read_table(comb_file, sep='\t', header=0).set_index('reads', drop = False)
+    top50 = comb_table[comb_table['assembly'] == assembly_name].index
+    top50_files = [f"{depth_files_prefix}{x}.depth" for x in top50]
+    return(top50_files)
+
+    

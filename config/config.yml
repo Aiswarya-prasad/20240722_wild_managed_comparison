@@ -1,4 +1,5 @@
 PROJECT_FULL_PATH: "/work/FAC/FBM/DMF/pengel/spirit/aprasad/BACKUP_current/20240722_wild_managed_comparison"
+SCRATCH_PATH: "/scratch/aprasad/20240722_wild_managed_comparison_tmp"
 SAMPLES_RAW:
  - "DNA1_1"
  - "DNA1_2"

@@ -142,3 +142,11 @@ sample_name_from_shortname <- function(shortname) {
   sample_name <- gsub("-", "_", shortname)
   return(paste0("DNA", sample_name))
 }
+
+Species_colors <-  c("A. m. carnica" = "#71BA42",
+  "A. m. jemenica" = "#4482FD",
+  "A. m. lamarkii" = "#a6cee3",
+  "A. m. littorea" = "#AAAAAA",
+  "A. m. monticola" = "#814E0F",
+  "A. m. scutellata" = "#FA5F51",
+  "A. m. simensis" = "#E6518C")
