@@ -1,0 +1,14 @@
+Transaction
+
+  Prefix: /work/FAC/FBM/DMF/pengel/spirit/aprasad/snakemake-conda-envs-2024/b417e013526c2f1af1d473aca7d22935_
+
+  All requested packages already installed
+
+
+Looking for: ['fastani']
+
+
+Pinned packages:
+  - python 3.8.*
+
+

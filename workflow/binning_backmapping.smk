@@ -49,7 +49,7 @@ rule simka:
         mem_mb = convertToMb("20G")
     threads: 8
     log: "results/04_binning_backmapping/simka.log"
-    conda: "../config/envs/mags-env.yaml"
+    conda: "../config/envs/mags-env.yaml" # actually used slightly different "../config/envs/mags-env.yaml"
     shell:
         """
         simka -in {input.simka_list} -out {output.simka_out} \
@@ -152,7 +152,7 @@ rule make_depth_files:
     threads: 16
     log: "results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_{sample}_depth_summary.log"
     benchmark: "results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_{sample}_depth_summary.benchmark"
-    conda: "../config/envs/mags-env.yaml"
+    conda: "../config/envs/mags-env.yaml" # actually used slightly different "../config/envs/mags-env.yaml"
     shell:
         """
         jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} {input.bam} &> {log}
@@ -177,10 +177,36 @@ rule merge_depth_files:
     threads: 16
     log: "results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_all_samples_depth_summary.log"
     benchmark: "results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_all_samples_depth_summary.benchmark"
-    conda: "../config/envs/mags-env.yaml"
+    conda: "../config/envs/mags-env.yaml" # actually used slightly different "../config/envs/mags-env.yaml"
     shell:
         """
         ./scripts/merge_depths.pl {input.depth_files} > {output.merged_depth_file}
         """
 
 # binning on all samples with metabat
+rule bin_metabat:
+    input:
+        merged_depth_file = "results/04_binning_backmapping/backmapping/{sample}/{sample}_scaffolds_vs_top50_samples.depth",
+        assembly = "results/03_Assembly/{sample}/{sample}_scaffolds_1k_filtered.fasta",
+    output:
+        out_dir = directory("results/04_binning_backmapping/binning/{sample}_MAGs")
+    params:
+        min_len = 2000,
+        max_edges = 500,
+        min_cls = 200000,
+        min_cv = 1,
+        jobname="binning_{sample}",
+        account="pengel_spirit",
+        runtime_s=convertToSec("0-10:10:00"),
+    resources:
+        mem_mb = convertToMb("50G")
+    threads: 16
+    log: "results/04_binning_backmapping/binning/{sample}_mag_binning.log"
+    benchmark: "results/04_binning_backmapping/binning/{sample}_mag_binning.benchmark"
+    conda: "../config/envs/mags-env.yaml" # actually used slightly different "../config/envs/mags-env.yaml"
+    shell:
+        """
+        metabat2 -i {input.assembly} -a {input.merged_depth_file} \
+        -o {output.out_dir}/{wildcards.sample} --minContig {params.min_len} \
+        --maxEdges {params.max_edges} -x {params.min_cv} --minClsSize {params.min_cls} --saveCls -v
+        """

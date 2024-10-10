@@ -11,7 +11,7 @@ dependencies:
   - prodigal
   - pplacer
   - fasttree
-  - fastani=1.32
+  - fastani
   - hmmer
   - metabat2
   - checkm-genome

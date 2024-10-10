@@ -48,9 +48,13 @@ rule targets:
         scaffolds = expand("results/03_Assembly/{sample}/{sample}_scaffolds_1k_filtered.fasta", sample=SAMPLES),
         quast_marker = expand("results/03_Assembly/{sample}/{sample}_quast_marker.done", sample=SAMPLES),
         # simka_comb = expand("results/04_binning_backmapping/simka_parsed/combinations_{dist}.txt", dist=["jaccard"]),
-        merged_depth_file = expand("results/04_binning_backmapping/backmapping/{assembly}/{assembly}_scaffolds_vs_top50_samples.depth", assembly=SAMPLES),
+        merged_depth_file = expand("results/04_binning_backmapping/binning/{sample}_MAGs", sample=SAMPLES),
+        mag_metadata = "results/05_MAGs_collection/MAGs_metadata_summary.tsv",
+        instrain_compare_marker = "results/06_instrain/03_instrain_compare/all_compared.done"
 
 include: "trim-qc.smk"
 include: "host_mapping_depleting.smk"
 include: "assembly-qc.smk"
 include: "binning_backmapping.smk"
+include: "annotate_mags.smk"
+include: "mag_db_instrain.smk"

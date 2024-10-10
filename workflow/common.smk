@@ -83,3 +83,11 @@ def top50_samples_for_backmapping(comb_file, depth_files_prefix, assembly_name):
     return(top50_files)
 
     
+def get_rep_mags(metadata):
+    with open(metadata, 'r') as f:
+        header = f.readline()
+        header = header.strip()
+        id_ind = header.split('\t').index('ID')
+        reference_ind = header.split('\t').index('Representative')
+        rep_mags = [line.split('\t')[id_ind] for line in f.readlines() if str(line.strip().split('\t')[reference_ind]) == '1']
+    return rep_mags
